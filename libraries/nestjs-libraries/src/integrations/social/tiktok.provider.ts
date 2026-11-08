@@ -22,6 +22,7 @@ import { createReadStream } from 'fs';
 import { getSsrfSafeDispatcher } from '@gitroom/nestjs-libraries/dtos/webhooks/ssrf.safe.dispatcher';
 import { Integration } from '@prisma/client';
 import { Rules } from '@gitroom/nestjs-libraries/chat/rules.description.decorator';
+import { DashboardFunction } from '@gitroom/nestjs-libraries/integrations/dashboard.function.decorator';
 
 @Rules(
   [
@@ -415,6 +416,31 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
       picture: avatar_url,
       username: username,
     };
+  }
+
+  // PostMarga: TikTok's Direct Post guidelines require loading the creator's
+  // latest creator_info every time the post page renders. Returns TikTok's body
+  // as is ({ data, error }); the caller reads error.code itself, except for
+  // access_token_invalid (see below).
+  @DashboardFunction()
+  async creatorInfo(accessToken: string) {
+    const res = await fetch(
+      'https://open.tiktokapis.com/v2/post/publish/creator_info/query/',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+    const body = await res.json();
+    // TikTok tokens last 24h and /integrations/function passes the stored one.
+    // Throwing RefreshToken makes the controller refresh it and call again.
+    if (body?.error?.code === 'access_token_invalid') {
+      throw new RefreshToken('tiktok', JSON.stringify(body), '');
+    }
+    return body;
   }
 
   async maxVideoLength(accessToken: string) {
