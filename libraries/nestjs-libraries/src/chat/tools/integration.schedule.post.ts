@@ -284,10 +284,12 @@ If validation fails, the result contains output.errors describing what to fix; t
             ],
           }, 'MCP');
           // Same public preview page the calendar "Preview Post" button opens.
+          // PostMarga: PREVIEW_URL (e.g. https://preview.postmarga.com) brands the
+          // link without moving FRONTEND_URL, which OAuth redirects depend on.
           finalOutput.push(
             ...output.map((p) => ({
               ...p,
-              previewUrl: `${process.env.FRONTEND_URL}/p/${p.postId}?share=true`,
+              previewUrl: `${(process.env.PREVIEW_URL || process.env.FRONTEND_URL || '').replace(/\/+$/, '')}/p/${p.postId}?share=true`,
             }))
           );
         }
