@@ -1,0 +1,14 @@
+--- a/libraries/nestjs-libraries/src/integrations/social/youtube.provider.ts	2026-10-24 14:16:59.000000000 +0000
++++ b/libraries/nestjs-libraries/src/integrations/social/youtube.provider.ts	2026-11-05 16:12:02.308808537 +0000
+@@ -65,11 +65,8 @@
+   scopes = [
+     'https://www.googleapis.com/auth/userinfo.profile',
+     'https://www.googleapis.com/auth/userinfo.email',
+-    'https://www.googleapis.com/auth/youtube',
+-    'https://www.googleapis.com/auth/youtube.force-ssl',
+     'https://www.googleapis.com/auth/youtube.readonly',
+     'https://www.googleapis.com/auth/youtube.upload',
+-    'https://www.googleapis.com/auth/youtubepartner',
+     'https://www.googleapis.com/auth/yt-analytics.readonly',
+   ];
+ 
